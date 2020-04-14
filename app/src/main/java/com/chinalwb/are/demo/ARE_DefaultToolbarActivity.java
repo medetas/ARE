@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -51,7 +52,7 @@ import java.io.IOException;
 
 import static com.chinalwb.are.demo.TextViewActivity.HTML_TEXT;
 
-public class ARE_DefaultToolbarActivity extends AppCompatActivity {
+public class ARE_DefaultToolbarActivity extends AppCompatActivity implements DialogSave.SaveDialogListener {
 
     private static final int READ_REQUEST_CODE = 42;
 
@@ -63,29 +64,11 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity {
 
     private boolean scrollerAtEnd;
 
-    private ImageStrategy imageStrategy = new DemoImageStrategy();
+    String[] mimeTypes =
+            {"application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
+                    "text/plain",
+                    "text/html"};
 
-    private VideoStrategy mVideoStrategy = new VideoStrategy() {
-        @Override
-        public String uploadVideo(Uri uri) {
-            try {
-                Thread.sleep(3000); // Do upload here
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return "http://www.xx.com/x.mp4";
-        }
-
-        @Override
-        public String uploadVideo(String videoPath) {
-            try {
-                Thread.sleep(3000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return "http://www.xx.com/x.mp4";
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,12 +126,18 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity {
 
         mEditText = this.findViewById(R.id.arEditText);
         mEditText.setToolbar(mToolbar);
-        mEditText.setImageStrategy(imageStrategy);
-        mEditText.setVideoStrategy(mVideoStrategy);
 
 
-        setHtml();
 
+        //setHtml();
+        Intent intent = getIntent();
+
+        String fName = intent.getStringExtra("fname");
+        if (fName.equals("Open")) {
+            openFile();
+        }
+
+       // openFile();
         initToolbarArrow();
     }
 
@@ -213,8 +202,9 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int menuId = item.getItemId();
         if (menuId == com.chinalwb.are.R.id.action_save) {
-            String html = this.mEditText.getHtml();
-            DemoUtil.saveHtml(this, html);
+            openDialog();
+            //String html = this.mEditText.getHtml();
+            //DemoUtil.saveHtml(this, html);
 
             return true;
         }
@@ -226,17 +216,52 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity {
             return true;
         }
         if (menuId == R.id.action_open) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_STORAGE);
-            }
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("html/+");
-            startActivityForResult(intent, READ_REQUEST_CODE);
+            openFile();
         }
         return super.onOptionsItemSelected(item);
     }
 
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mToolbar.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == READ_REQUEST_CODE && resultCode == AppCompatActivity.RESULT_OK) {
+            if (data != null) {
+                Uri uri = data.getData();
+                String path = uri.getPath();
+                path = path.substring(path.indexOf(":") + 1);
+                Toast.makeText(this, "" + path, Toast.LENGTH_SHORT).show();
+                mEditText.fromHtml(readText(path));
+            }
+        }
+    }
+
+    public void openDialog(){
+        DialogSave dialogSave = new DialogSave();
+        dialogSave.show(getSupportFragmentManager(), "save dialog");
+    }
+
+    public void openFile(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_STORAGE);
+        }
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(mimeTypes.length == 1 ? mimeTypes[0] : "*/*");
+        if (mimeTypes.length > 0) {
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        }
+        startActivityForResult(intent, READ_REQUEST_CODE);
+    }
+
+
+    @Override
+    public void applyText(String filename) {
+        this.setTitle(filename);
+        String html = this.mEditText.getHtml();
+        DemoUtil.saveHtml(this, html, filename);
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -250,22 +275,8 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mToolbar.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == READ_REQUEST_CODE && resultCode == AppCompatActivity.RESULT_OK) {
-            if (data != null) {
-                Uri uri = data.getData();
-                String path = uri.getPath();
-                path = path.substring(path.indexOf(":") + 1);
-                Toast.makeText(this, "" + path, Toast.LENGTH_SHORT).show();
-                mEditText.getHtml();
-            }
-        }
-    }
-
-    private String readText(String input){
-        File file = new File(input);
+    public String readText(String input){
+        File file = new File(Environment.getExternalStorageDirectory(), input);
         StringBuilder text = new StringBuilder();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -277,6 +288,12 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity {
             br.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        int index = file.getName().indexOf(".");
+        if (index != -1) {
+            this.setTitle(file.getName().substring(0, index));
+
+
         }
         return text.toString();
     }

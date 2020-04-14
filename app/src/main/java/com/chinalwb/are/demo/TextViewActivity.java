@@ -59,5 +59,6 @@ public class TextViewActivity extends AppCompatActivity {
                     "    </body></html>";
         }
         areTextView.fromHtml(s);
+
     }
 }

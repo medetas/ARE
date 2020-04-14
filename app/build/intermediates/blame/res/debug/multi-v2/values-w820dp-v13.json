@@ -4,7 +4,7 @@
             "outputFile": "C:\\Users\\god_blAssed\\AndroidStudioProjects\\ARE\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-w820dp-v13\\values-w820dp-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\god_blAssed\\AndroidStudioProjects\\ARE\\are\\build\\intermediates\\bundles\\debug\\res\\values-w820dp-v13\\values-w820dp-v13.xml",
+                    "source": "C:\\Users\\god_blAssed\\AndroidStudioProjects\\ARE\\are\\build\\intermediates\\packaged_res\\debug\\values-w820dp-v13\\values-w820dp-v13.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

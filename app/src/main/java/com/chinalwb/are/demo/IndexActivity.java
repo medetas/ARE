@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chinalwb.are.glidesupport.GlideApp;
@@ -29,68 +31,45 @@ public class IndexActivity extends AppCompatActivity {
        }
 
     private void initViews() {
-        Button defaultToolbarButton = this.findViewById(R.id.defaultToolbar);
+        LinearLayout defaultToolbarButton = this.findViewById(R.id.defaultToolbar);
         openPage(defaultToolbarButton, ARE_DefaultToolbarActivity.class);
 
-        Button fullBottomButton = this.findViewById(R.id.fullBottomButton);
-        openPage(fullBottomButton, ARE_FullBottomActivity.class);
 
-        Button fullTopButton = this.findViewById(R.id.fullTopButton);
-        openPage(fullTopButton, ARE_FullTopActivity.class);
 
-        Button minBottomButton = this.findViewById(R.id.minBottomButton);
-        openPage(minBottomButton, ARE_MinBottomActivity.class);
+        LinearLayout openButton = this.findViewById(R.id.open);
+        openPage2(openButton, ARE_DefaultToolbarActivity.class);
 
-        Button minTopButton = this.findViewById(R.id.minTopButton);
-        openPage(minTopButton, ARE_MinTopActivity.class);
-
-        Button minHideButton = this.findViewById(R.id.minHideButton);
-        openPage(minHideButton, ARE_MinHideActivity.class);
-
-        Button multipleInstanceButton = this.findViewById(R.id.multiInstanceButton);
-        openPage(multipleInstanceButton, ARE_MultiInstanceActivity.class);
-
-        Button openButton = this.findViewById(R.id.openButton);
-       // openPage(openButton, ARE_DefaultToolbarActivity.class);
-        openButton.setOnClickListener(new View.OnClickListener() {
+        LinearLayout cameraButton = this.findViewById(R.id.camerabutton);
+        cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listFiles();
-            }
-        });
-
-    }
-
-    private void openPage(Button button, final Class activity) {
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(IndexActivity.this, activity);
+                Intent intent = new Intent(IndexActivity.this, Camera.class);
                 startActivity(intent);
             }
         });
     }
 
-    private String readText(String input){
-        File file = new File(input);
-        StringBuilder text = new StringBuilder();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                text.append(line);
-                text.append("\n");
+    private void openPage(LinearLayout button, final Class activity) {
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(IndexActivity.this, activity);
+                intent.putExtra("fname", "New");
+                startActivity(intent);
+
             }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return text.toString();
+        });
+    }
+    private void openPage2(LinearLayout button, final Class activity) {
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(IndexActivity.this, activity);
+                intent.putExtra("fname", "Open");
+                startActivity(intent);
+
+            }
+        });
     }
 
-    private void listFiles(){
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/+");
-    }
 }

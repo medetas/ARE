@@ -23,7 +23,7 @@ import java.util.Date;
 
 public class DemoUtil {
     @SuppressLint("SimpleDateFormat")
-    public static void saveHtml(Activity activity, String html) {
+    public static void saveHtml(Activity activity, String html, String filename) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -32,9 +32,9 @@ public class DemoUtil {
                 ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, ARE_Toolbar.REQ_VIDEO);
                 return;
             }
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");
-            String time = dateFormat.format(new Date());
-            String fileName = time.concat(".html");
+            //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_hh_mm_ss");
+           // String time = dateFormat.format(new Date());
+            String fileName = filename.concat(".html");
 
             String filePath = Environment.getExternalStorageDirectory() + File.separator + "ARE" + File.separator;
             File dir = new File(filePath);
