@@ -24,6 +24,7 @@ public class DialogSave extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.save_dialog, null);
 
+
         builder.setView(view)
                 .setTitle("Save file")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -40,7 +41,7 @@ public class DialogSave extends AppCompatDialogFragment {
                     }
                 });
         editTextFilename = view.findViewById(R.id.edit_filename);
-
+        editTextFilename.setText(getTag());
         return builder.create();
     }
 

@@ -12,7 +12,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/view"
         android:label="@string/title_activity_are__default_toolbar"
         android:largeHeap="true"
         android:theme="@style/AppTheme">
@@ -36,10 +36,10 @@
         <activity
             android:name=".ARE_DefaultToolbarActivity"
             android:label="@string/title_activity_are__default_toolbar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".IndexActivity"/>
         <activity
-            android:name=".TestRead"
-            android:label="Lala" />
+            android:name=".TestRead" />
 
         <activity android:name=".Camera"/>
 

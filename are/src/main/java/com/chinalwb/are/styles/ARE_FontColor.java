@@ -112,6 +112,7 @@ public class ARE_FontColor extends ARE_ABS_Dynamic_Style<AreForegroundColorSpan>
 
 	@Override
 	protected AreForegroundColorSpan newSpan(int color) {
+
 		return new AreForegroundColorSpan(color);
 	}
 

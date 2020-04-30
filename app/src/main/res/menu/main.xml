@@ -1,22 +1,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.chinalwb.acke.MainActivity" >
-
-    <item
-        android:id="@+id/action_save"
-        android:orderInCategory="100"
-        android:title="Save"
-        app:showAsAction="always"/>
+    tools:context="com.chinalwb.acke.MainActivity">
 
     <item
         android:id="@+id/action_show_tv"
+        android:icon="@drawable/preview4"
         android:title="Show TextView"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/save4"
 
+        android:title="Save"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/action_open"
+        android:icon="@drawable/openfolder4"
         android:title="Open"
         app:showAsAction="always"/>
+
+
 
 </menu>

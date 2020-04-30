@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -44,6 +45,7 @@ import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Superscript;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Underline;
 import com.chinalwb.are.styles.toolitems.ARE_ToolItem_Video;
 import com.chinalwb.are.styles.toolitems.IARE_ToolItem;
+//import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -82,11 +84,11 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity implements Dia
 
     private void initToolbar() {
         mToolbar = this.findViewById(R.id.areToolbar);
+        IARE_ToolItem fontSize = new ARE_ToolItem_FontSize();
         IARE_ToolItem bold = new ARE_ToolItem_Bold();
         IARE_ToolItem italic = new ARE_ToolItem_Italic();
         IARE_ToolItem underline = new ARE_ToolItem_Underline();
         IARE_ToolItem strikethrough = new ARE_ToolItem_Strikethrough();
-        IARE_ToolItem fontSize = new ARE_ToolItem_FontSize();
         IARE_ToolItem fontColor = new ARE_ToolItem_FontColor();
         IARE_ToolItem backgroundColor = new ARE_ToolItem_BackgroundColor();
         IARE_ToolItem quote = new ARE_ToolItem_Quote();
@@ -103,11 +105,11 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity implements Dia
         IARE_ToolItem video = new ARE_ToolItem_Video();
         IARE_ToolItem at = new ARE_ToolItem_At();
 
+        mToolbar.addToolbarItem(fontSize);
         mToolbar.addToolbarItem(bold);
         mToolbar.addToolbarItem(italic);
         mToolbar.addToolbarItem(underline);
         mToolbar.addToolbarItem(strikethrough);
-        mToolbar.addToolbarItem(fontSize);
         mToolbar.addToolbarItem(fontColor);
         mToolbar.addToolbarItem(backgroundColor);
         mToolbar.addToolbarItem(quote);
@@ -128,13 +130,15 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity implements Dia
         mEditText.setToolbar(mToolbar);
 
 
+        String cameraText = getIntent().getStringExtra("cameratext");
+        if (cameraText != null) {
+            mEditText.fromHtml(mEditText.getHtml() + cameraText);
 
+        }
         //setHtml();
-        Intent intent = getIntent();
-
-        String fName = intent.getStringExtra("fname");
-        if (fName.equals("Open")) {
-            openFile();
+        String fName = getIntent().getStringExtra("fname");
+        if (fName != null) {
+               mEditText.fromHtml(fName);
         }
 
        // openFile();
@@ -158,6 +162,7 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity implements Dia
 
     private void initToolbarArrow() {
         final ImageView imageView = this.findViewById(R.id.arrow);
+        FloatingActionButton fab = findViewById(R.id.fab);
         if (this.mToolbar instanceof ARE_ToolbarDefault) {
             ((ARE_ToolbarDefault) mToolbar).getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
@@ -190,6 +195,16 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity implements Dia
                 }
             }
         });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ARE_DefaultToolbarActivity.this, Camera.class);
+                intent.putExtra("from", "field");
+                startActivityForResult(intent, 1);
+            }
+        });
+
     }
 
     @Override
@@ -212,6 +227,7 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity implements Dia
             String html = this.mEditText.getHtml();
             Intent intent = new Intent(this, TextViewActivity.class);
             intent.putExtra(HTML_TEXT, html);
+            intent.putExtra("title", this.getTitle());
             startActivity(intent);
             return true;
         }
@@ -226,6 +242,16 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity implements Dia
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mToolbar.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                String result = data.getStringExtra("cameratext");
+                mEditText.fromHtml(mEditText.getHtml() + result);
+            }
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "No text", Toast.LENGTH_LONG).show();
+
+            }
+        }
         if (requestCode == READ_REQUEST_CODE && resultCode == AppCompatActivity.RESULT_OK) {
             if (data != null) {
                 Uri uri = data.getData();
@@ -239,7 +265,7 @@ public class ARE_DefaultToolbarActivity extends AppCompatActivity implements Dia
 
     public void openDialog(){
         DialogSave dialogSave = new DialogSave();
-        dialogSave.show(getSupportFragmentManager(), "save dialog");
+        dialogSave.show(getSupportFragmentManager(), (String) this.getTitle());
     }
 
     public void openFile(){

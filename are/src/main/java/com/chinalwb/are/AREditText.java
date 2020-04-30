@@ -89,7 +89,7 @@ public class AREditText extends AppCompatEditText {
 	}
 
 	private void init() {
-		useSoftwareLayerOnAndroid8();
+		//useSoftwareLayerOnAndroid8();
         // this.setMovementMethod(new AREMovementMethod());
 		this.setFocusableInTouchMode(true);
 		this.setBackgroundColor(Color.WHITE);

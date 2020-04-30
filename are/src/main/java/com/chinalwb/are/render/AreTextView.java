@@ -45,6 +45,7 @@ public class AreTextView extends AppCompatTextView {
         this.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.DEFAULT_FONT_SIZE);
         initGlobalValues();
         initMovementMethod();
+
     }
 
     private void initGlobalValues() {

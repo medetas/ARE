@@ -1,5 +1,6 @@
 package com.chinalwb.are.demo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.Manifest;
@@ -10,6 +11,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -23,6 +26,7 @@ public class Camera extends AppCompatActivity {
     SurfaceView mCameraView;
     TextView mTextView;
     CameraSource mCameraSource;
+    Button mButtonOk;
 
     private static final String TAG = "Camera";
     private static final int requestPermissionID = 101;
@@ -34,6 +38,7 @@ public class Camera extends AppCompatActivity {
 
         mCameraView = findViewById(R.id.surfaceView);
         mTextView = findViewById(R.id.text_view);
+        mButtonOk = findViewById(R.id.buttonOk);
 
         startCameraSource();
     }
@@ -133,11 +138,29 @@ public class Camera extends AppCompatActivity {
                                     stringBuilder.append("\n");
                                 }
                                 mTextView.setText(stringBuilder.toString());
+
                             }
                         });
                     }
                 }
             });
         }
+        mButtonOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               // mTextView.setText("<b>check camera for result</b>");
+                String from = getIntent().getStringExtra("from");
+                if (from != null && from.equals("field")) {
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("cameratext", mTextView.getText().toString());
+                    setResult(RESULT_OK, resultIntent);
+                    finish();
+                } else {
+                    Intent intent = new Intent(Camera.this, ARE_DefaultToolbarActivity.class);
+                    intent.putExtra("cameratext", mTextView.getText().toString());
+                    startActivity(intent);
+                }
+            }
+        });
     }
 }

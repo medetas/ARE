@@ -25,6 +25,7 @@ public class TextViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setTitle(getIntent().getStringExtra("title"));
         setContentView(R.layout.activity_are_tv);
         AreTextView areTextView = findViewById(R.id.areTextView);
         String s = getIntent().getStringExtra(HTML_TEXT);

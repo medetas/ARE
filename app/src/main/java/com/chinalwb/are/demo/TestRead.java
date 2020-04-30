@@ -25,28 +25,24 @@ public class TestRead extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_STORAGE = 1000;
     private static final int READ_REQUEST_CODE = 42;
-    Button b_load;
-    TextView tv_output;
+
+    String[] mimeTypes =
+            {"application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .doc & .docx
+                    "text/plain",
+                    "text/html"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_testread);
+        //setContentView(R.layout.activity_testread);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_STORAGE);
 
             }
 
-        b_load = (Button) findViewById(R.id.button);
-        tv_output = (TextView) findViewById(R.id.textView);
+        performFileSearch();
 
-        b_load.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                performFileSearch();
-            }
-        });
     }
 
     public String readText(String input){
@@ -69,7 +65,10 @@ public class TestRead extends AppCompatActivity {
     private void performFileSearch(){
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/html");
+        intent.setType(mimeTypes.length == 1 ? mimeTypes[0] : "*/*");
+        if (mimeTypes.length > 0) {
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        }
         startActivityForResult(intent, READ_REQUEST_CODE);
 
 
@@ -85,7 +84,12 @@ public class TestRead extends AppCompatActivity {
                 String path = uri.getPath();
                 path = path.substring(path.indexOf(":") + 1);
                 Toast.makeText(this, "" + path, Toast.LENGTH_SHORT).show();
-                tv_output.setText(readText(path));
+               // mEditText.fromHtml(readText(path));
+
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("fname", readText(path));
+                setResult(RESULT_OK, resultIntent);
+                finish();
             }
         }
     }
